@@ -1,110 +1,92 @@
-# Monty
+#include "monty.h"
 
-`monty` is an interpreter of Monty ByteCodes files which is a scripting language just like Python.
+/**
+ *add_dnodeint_end - Add a note at the end of the doubly link list
+ *@head: First position of linked list
+ *@n: Data to store
+ *Return: A doubly linked list
+ */
 
-## About the Monty language
-This is a language that contains specific instructions to manipulate data information (stacks or queues), where each instruction (*called opcode*) is sended per line. Files which contains Monty byte codes usually have the `.m` extension.
+stack_t *add_dnodeint_end(stack_t **head, const int n)
+{
+	stack_t *temp, *aux;
 
-Example (`file.m`):
-```bash
-$ cat file.m
-# Pushing element to the stack
-push 0
-push 1
-push 2
-# Printing all elements
-pall
-push 3
-push 4
-pop
-# Rotating the stack to the bottom
-rotr
-pall
-rotl
-# Setting FIFO
-queue
-push 5
-# Setting LIFO
-stack
-push 5
-$
-```
+	if (head == NULL)
+		return (NULL);
+	temp = malloc(sizeof(stack_t));
+	if (!temp)
+	{
+		dprintf(2, "Error: malloc failed\n");
+		free_vglo();
+		exit(EXIT_FAILURE);
+	}
+	temp->n = n;
+	/*Careful with the first time*/
+	if (*head == NULL)
+	{
+		temp->next = *head;
+		temp->prev = NULL;
+		*head = temp;
+		return (*head);
+	}
+	aux = *head;
+	while (aux->next)
+		aux = aux->next;
+	temp->next = aux->next;
+	temp->prev = aux;
+	aux->next = temp;
+	return (aux->next);
+}
 
-## Technologies
-* Interpreter was written with C language
-* C files are compiled using `gcc`
-* C files are written according to the betty coding standard
-* Tested on Ubuntu 20.04 LTS
+/**
+ *add_dnodeint - Add a note at the begining of the doubly link list
+ *@head: First position of linked list
+ *@n: Data to store
+ *Return: A doubly linked list
+ */
 
-## Usage
-To compile all files:
+stack_t *add_dnodeint(stack_t **head, const int n)
+{
+	stack_t *temp;
 
-```bash
-$ gcc -Wall -Werror -Wextra -pedantic *.c -o monty
-$
-```
+	if (head == NULL)
+		return (NULL);
+	temp = malloc(sizeof(stack_t));
+	if (!temp)
+	{
+		dprintf(2, "Error: malloc failed\n");
+		free_vglo();
+		exit(EXIT_FAILURE);
+	}
+	temp->n = n;
+	/*Careful with the first time*/
+	if (*head == NULL)
+	{
+		temp->next = *head;
+		temp->prev = NULL;
+		*head = temp;
+		return (*head);
+	}
+	(*head)->prev = temp;
+	temp->next = (*head);
+	temp->prev = NULL;
+	*head = temp;
+	return (*head);
+}
 
-The **synopsis** of the interpreter is the following:
+/**
+ * free_dlistint - Frees the doubly linked list
+ * @head: Head of the list
+ * Return: No return
+ */
 
-```bash
-$ ./monty [filename]
-$
-```
+void free_dlistint(stack_t *head)
+{
+	stack_t *tmp;
 
-To run the interpreter:
-
-```bash
-$ ./monty file.m
-2
-1
-0
-0
-3
-2
-1
-$
-```
-
-## Features
-### Opcodes
-`monty` executes the following opcodes:
-
-| Opcode | Description |
-| -------- | ----------- |
-| `push` | Pushes an element to the stack |
-| `pall` | Prints all the values on the stack |
-| `pint` | Prints the value at the top of the stack |
-| `pop` | Removes the top element of the stack |
-| `swap` | Swaps the top two elements of the stack |
-| `queue` | Sets the format of the data to a queue (FIFO) |
-| `stack` | Sets the format of the data to a stack (LIFO) |
-| `nop` | Doesn't do anything |
-| `add` | Adds the top two elements of the stack |
-| `sub` | Subtracts the top element of the stack from the second top element of the stack |
-| `mul` | Multiplies the second top element of the stack with the top element of the stack |
-| `div` | Divides the second top element of the stack by the top element of the stack |
-| `mod` | Computes the rest of the division of the second top element of the stack by the top element of the stack |
-| `pchar` | Prints the char at the top of the stack |
-| `pstr` | Prints the string starting at the top of the stack |
-| `rotl` | Rotates the stack to the top |
-| `rotr` | Rotates the stack to the bottom |
-
-Comments, indicated with `#`, are not executed by the interpreter.
-
-When a **nonextistent opcode** is passed, the interpreter prints an error message and stops:
-
-```bash
-$ cat errorfile.m
-push 1
-pint
-pcx
-$ ./monty errorfile.m
-1
-L3: unknown instruction pcx
-```
-
-### Return value
-When there is no errors, `monty` returns `0`. Otherwise, returns `1`
-
-## Author
-**Brenda Ekemezie**: [GitHub](https://github.com/brendaoby)
+	while ((tmp = head) != NULL)
+	{
+		head = head->next;
+		free(tmp);
+	}
+}
